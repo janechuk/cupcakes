@@ -72,3 +72,25 @@ def create_cupcake():
     # Return w/status code 201 --- return tuple (json, status)
     return ( jsonify(cupcake=serialized), 201 )
     # end create_cupcake
+
+
+
+@app.route('/api/cupcakes/<cupcake_id>', methods=["PATCH"])
+def update_cupcake(id):
+    """Updates a particular cupcake and responds w/ JSON of that updated cupcake"""
+    cupcake = Cupcake.query.get_or_404(id)
+    cupcake.flavor = request.json.get('flavor', cupcake.flavor)
+    cupcake.size = request.json.get('size',  cupcake.size)
+    cupcake.rating = request.json.get('rating',  cupcake.rating)
+    cupcake.image = request.json.get('image',  cupcake.image)
+    db.session.commit()
+    return jsonify(cupcake=cupcake.serialize())
+
+
+@app.route('/api/cupcakes/<cupcake_id>', methods=["DELETE"])
+def delete_cupcake(id):
+    """Deletes a particular cupcake"""
+    cupcake = Cupcake.query.get_or_404(id)
+    db.session.delete(cupcake)
+    db.session.commit()
+    return jsonify(message="deleted")
